@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- CSS only -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <!-- JS, Popper.js, and jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="../css/pruebas.css">
+        <link rel="stylesheet" href="../css/listas.css">
+        <script src="https://kit.fontawesome.com/ccf219f42d.js" crossorigin="anonymous"></script>
+
+    </head>
+  <body id="uwu">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    <header>
+      <div class="contenedor">
+        <a class="logo" href = "./index.html"><img src="https://www.udp.cl/cms/wp-content/uploads/2022/03/logo_udp_40_color.png" alt="" width="150" height="50"></a>
+        <nav>
+          <a href="./home.html">Inicio</a>
+          <a href="./profes.html">Listado Profesores</a>
+          <a href="./cursos.html">Listado Cursos</a>
+      </nav>
+      <nav style="position:absolute;right: 5%;">
+            <a href="#" ><span id="user"></span></a>
+            <a href="#" id="logout" >Cerrar sesion</a>
+        </nav>
+      </div>
+    </header>
+  <script>
+    console.log(localStorage.getItem('userAdmin'))
+    if(localStorage.getItem('userAdmin')){
+        $("#user").html(localStorage.getItem('userAdmin'));
+        $('#logout').click(function(){
+        localStorage.clear();
+        window.location.href='http://20.200.217.210:3000/admin/';
+        });
+    }
+    else{
+        alert("Debe loguearse para ingresar a la pagina solicitada");
+        window.location.href='http://20.200.217.210:3000/admin/';
+    }
+  </script>
+  <br>
+  <section id="profesores"> 
+
+      <h1>Información del profesor</h1>
+      
+    </section> 
+    <section id="formulario" style="width: 70%;margin-top:0px;margin-right: auto;margin-left: auto">
+      <div style="margin-top:2%; width: 140%">
+            <div class="form-row justify-content-center">
+                <div class="col-md-3 mb-3">
+                  <label for="nombre"> <b> Nombre Completo: </b></label>
+                  <br>
+                <b id="nombreProfe"></b>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="correo"> <b> Correo de Contacto: </b> </label>
+                  <br>
+                <b id="mailProfe"></b>
+                </div>
+              </div>
+        </div>
+      </section>
+      <br>
+      <section id="profesores" style = "margin-top:0px"> 
+      <h1>Cursos asignados</h1>
+      </section> 
+        <aside>
+          <a href="./asignarCurso.html"> <button type = "button" class = "btn btn-secondary "> <i class="fa-solid fa-square-plus"></i> Asignar Curso</button> </a>
+        </aside>
+        <script>
+          $('#nombreProfe').html(localStorage.getItem('nameProfe'));
+          $('#mailProfe').html(localStorage.getItem('mailProfe'));
+          const data = {id_profesor: parseInt(localStorage.getItem('idProfe'))};
+          fetch("http://20.200.217.210:8000/getCursoByID",{
+              method: 'POST',
+              headers: {
+                  "Content-Type":"application/json"
+              },
+              body:  JSON.stringify(data)
+          })
+          .then(function(res) {
+              return res.json();
+          })     
+          .then(function(data) { 
+          if(data){
+              if(data.length > 0 ){
+                  var x = 0;
+                  var temp = "";
+                  data.forEach(element => {
+                      temp += "<tr>";
+                      temp += `<td id="id${x}">${element.id}</td>`;
+                      temp += `<td id="name${x}">${element.nombre}</td>`;
+                      temp += `<td id="año${x}">${element.año}</td>`;
+                      temp += `<td id="semestre${x}">${element.semestre}</td>`;
+                      temp += `<td id="seccion${x}">${element.seccion}</td>`;
+                      temp += `<td id="evaluaciones${x}">${element.cantidad_evaluaciones}</td>`;
+                      if(element.cantidad_evaluaciones < 3){
+                        temp += `<td><botton id ="${x}" onclick="notificar(this)" class="btn btn-warning"> <i class="fa-solid fa-envelope"></i> Notificar </botton></td>`;
+                      }
+                      else{
+                        temp += `<td><botton disabled id ="${x}" class="btn btn-success"><i class="fa-solid fa-circle-check"></i> Ok</botton></td>`;
+                      }
+                      temp += `<td><botton id = "${x}" onclick="deleteAsignacion(this)" class="btn btn-danger"> <i class="fa-solid fa-trash"></i> Eliminar </botton></td>`;
+                      temp += `<td><botton id = "${x}" onclick="detalles(this)" class="btn btn-info"> <i class="fa-solid fa-eye"></i> detalles</botton></td>`;
+                      temp += "</tr>";
+
+                      x = x+1;
+                  });
+                  document.getElementById('datainfo').innerHTML = temp;
+              }
+          }
+          else{
+              alert("Error al procesar la informacion");
+          }
+          })
+          .catch(function(err) {
+              console.log("error");
+          });
+          
+          
+      </script>
+        <div id="tablaP">
+          <table class = "table">
+              <thead class = "thead-dark">
+                  <tr>
+              <th>Id</th>
+              <th>Nombre</th>
+              <th>Año</th>
+              <th>Semestre</th>
+              <th>Seccion</th>
+              <th>Evaluaciones</th>
+              <th>Notificar</th>
+              <th>Eliminar</th>
+              <th>Detalles</th>
+              </tr>
+              </thead>
+              <tbody id="datainfo">
+                  <tr>
+                      
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+
+  </body>
+  <script>
+    function deleteAsignacion(element, color){
+      const data = {id_profesor: localStorage.getItem('idProfe'), id_curso: document.getElementById(`id${element.id}`).innerHTML};
+      fetch("http://20.200.217.210:8000/deleteAsignacion",{
+          method: 'POST',
+          headers: {
+              "Content-Type":"application/json"
+          },
+          body:  JSON.stringify(data)
+      })
+      .then(function(res) {
+          return res.json();
+      })     
+      .then(function(data) { 
+        if(data){
+          alert("Asignacion eliminada correctamente");
+          window.location.href = "./infoprofesor.html";
+        }
+        else{
+          alert("Error al procesar la informacion");
+        }
+      })
+      .catch(function(err) {
+          console.log("error");
+      });
+    }
+    function detalles(element, color){
+            localStorage.setItem('idCurso', document.getElementById(`id${element.id}`).innerHTML);
+            localStorage.setItem('nombreCurso', document.getElementById(`name${element.id}`).innerHTML);
+            localStorage.setItem('añoCurso', document.getElementById(`año${element.id}`).innerHTML);
+            localStorage.setItem('semestreCurso', document.getElementById(`semestre${element.id}`).innerHTML);
+            localStorage.setItem('seccionCurso', document.getElementById(`seccion${element.id}`).innerHTML);
+            window.location.href ="./infoCurso.html";
+        };
+
+    function notificar(element){
+      const email = localStorage.getItem("mailProfe");
+      const msg = `Estimado profesor: Nuestro sistema detecta que para su curso: ${document.getElementById(`name${element.id}`).innerHTML}, sección: ${document.getElementById(`seccion${element.id}`).innerHTML}, no se tiene el número mínimo de evaluaciones creadas.
+Le recordamos que todos los cursos poseen dos solemnes y un examen como minimo. Usted hasta el momento solo ha creado ${document.getElementById(`evaluaciones${element.id}`).innerHTML} evaluaciones.
+Le pedimos que solucione este inconveniente a la brevedad para poder tener dicha información respaldada para la escuela.
+
+Ante cualquier consulta, favor comunicarse con un administrador del sistema.`;
+      const data = {email: email, msg: msg};
+      fetch("http://20.200.217.210:8000/sendemail",{
+          method: 'POST',
+          headers: {
+              "Content-Type":"application/json"
+          },
+          body:  JSON.stringify(data)
+      }) 
+      .then(function(data) { 
+        if(data){
+          alert("Notificacion enviada correctamente");
+        }
+        else{
+          alert("Error al procesar la informacion");
+        }
+      })
+      .catch(function(err) {
+          console.log("error" + err);
+      });
+    }
+    
+  </script>
+  <footer>
+    <div class="contenedor">
+        <p>&copy; Suprinha Corp 2022 ø</p>
+    </div>
+</footer>
+  

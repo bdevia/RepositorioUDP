@@ -1,0 +1,58 @@
+.margin1{
+    margin-left: 8%;
+}
+.margin2{
+    margin-right: 8%;
+}
+.column{
+    margin-top: 2%;
+}
+
+aside {
+    padding-right: 10%;
+    float: right;
+  }
+h5{
+    text-align: center;
+    font-family: serif;
+    font-size: 15px;
+}
+.border{
+    background-color:white;
+    border:solid;
+    margin-top:3%;
+    margin-left:1%;
+    margin-right:1%;
+    padding:10px 0px 10px 0px;
+}
+.border1{
+    margin: 1%;
+}
+.border2{
+    margin-top: 1%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+footer{
+    margin-top:5%;
+}
+h4{
+    font-family:serif;
+    font-size:20px;
+}
+a{
+    font-family: serif;
+    color:white !important;
+}
+nav{
+    background-color: #cf1515 !important;
+}
+body{
+    background-color: #e2e2e2;
+}
+#logo{
+    margin-top:-4px;
+}
+body{
+    font-family: serif !important; 
+}

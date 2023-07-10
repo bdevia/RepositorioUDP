@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/pruebas.css">
+    <link rel="stylesheet" href="../css/listas.css">
+    <script src="https://kit.fontawesome.com/ccf219f42d.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</head>
+<body id="uwu">
+  <header>
+      <div class="contenedor">
+        <a class="logo" href = "./index.html"><img src="https://www.udp.cl/cms/wp-content/uploads/2022/03/logo_udp_40_color.png" alt="" width="150" height="50"></a>
+        <nav>
+            <a href="./home.html">Inicio</a>
+            <a href="./cursos.html">Mis Cursos</a>
+        </nav>
+        <nav style="position:absolute;right: 5%;">
+          <a href="#" ><span id="user"></span></a>
+          <a href="#" id="logout" >Cerrar sesion</a>
+      </nav>
+      </div>
+    </header>
+    <script>
+      if(localStorage.getItem('user')){
+          $("#user").html(localStorage.getItem('user'));
+          $('#logout').click(function(){
+          localStorage.clear();
+          window.location.href='http://20.200.217.210:3000/';
+          });
+      }
+      else{
+          alert("Debe loguearse para ingresar a la pagina solicitada");
+          window.location.href='http://20.200.217.210:3000/';
+      }
+    </script>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <aside>
+        <button type = "button" class = "btn btn-secondary " data-toggle="modal" data-target="#exampleModalScrollable"> <i class="fa-solid fa-square-plus"></i> Subir Archivo</button>
+      </aside>
+      <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalScrollableTitle">Añadir archivo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form enctype="multipart/form-data" id="form">
+                <div class="form-row justify-content-start">
+                  <label>Selecciona el tipo de entrega y adjunte el archivo</label>
+                  <select type="text" class="form-control" value="Tipo de entrega" list="items" id="select" required>
+                    <option value="0">Enunciado Evaluacion</option>
+                    <option value="1">Pauta Evaluacion</option>
+                    <option value="2">Notas Alumnos</option>
+                    <option value="3">Mejor Nota</option>
+                    <option value="4">Peor Nota</option>
+                  </select>
+                </div>
+                <div class="form-row justify-content-center" style="margin-top: 5px;">
+                    <input type="file" class="form-control" name="archivo" id="file" style="padding-bottom: 37px;" required >
+                </div>
+              </form>
+            </div>
+              <div class="modal-footer">
+              <input onclick="upload()" type="button" value="Subir" class="btn btn-primary"></button>
+              </div>
+          </div>
+        </div>
+      </div>
+    <div id="tablaP">
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Archivo</th>
+            <th>Descargar</th>
+            <th>Eliminar</th>
+            <th>Vista</th>
+        </tr>
+        </thead>
+        <tbody id="datainfo">
+        <tr>
+
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</body>
+<script>
+    const data = {id_evaluacion: localStorage.getItem('idEvaluacion')};
+    const tiposEntrega =["EnunciadoEvaluacion", "PautaEvaluacion", "NotasAlumnos", "MejorNota", "PeorNota"];
+    var datos = []; 
+    const bool = [0,0,0,0,0];
+    fetch("http://20.200.217.210:8000/readFiles",{
+            method: 'POST',
+            headers: {
+              "Content-Type":"application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(function(res) {
+            return res.json();
+        })     
+        .then(function(data) { 
+          if(data.length > 0 ){
+          var temp = "";
+          var x = 0;
+          data.forEach(element => {
+              temp += "<tr>";
+              temp += `<td id="id${x}">${element.id}</td>`;
+              temp += `<td id="nombre${x}">${element.nombre}</td>`;
+              temp += `<td id="nombre_archivo${x}">${element.nombre_archivo}</td>`;
+              temp += `<td><a href="http://20.200.217.210:8000/dowloadFile/${element.nombre_archivo}"><botton class="btn btn-info"><i class="fa-solid fa-download"></i> Download</botton></a></td>`;
+              temp += `<td><botton id = "${x}" onclick="deleteFile(this, 'red')" class="btn btn-danger"> <i class="fa-solid fa-trash"></i> Eliminar </botton></td>`;
+              temp += `<td><a href="http://20.200.217.210:8000/viewFile/${element.nombre_archivo}" target="_blank"><botton class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Vista Previa</botton></a></td>`;
+              temp += "</tr>";
+              datos.push(element.nombre);
+              x = x+1;
+          });
+          document.getElementById('datainfo').innerHTML = temp;
+          update(bool, datos);
+        }
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+
+
+    function upload(){
+        const typeFile = ["pdf", "pdf", "xlsx", "pdf", "pdf"]
+        if(verificar($("#select").val())){
+          const input = document.getElementById("file");
+          var formData = new FormData();
+          formData.append("archivo", input.files[0], localStorage.getItem('idEvaluacion')+'-'+tiposEntrega[$("#select").val()]+'.'+typeFile[$("#select").val()]);
+          formData.append("nombre", tiposEntrega[$("#select").val()]);
+          formData.append("id_evaluacion", localStorage.getItem('idEvaluacion'));
+          fetch("http://20.200.217.210:8000/uploadFile",{
+              method: 'POST',
+              headers: {
+                //"Content-Type":"application/json"
+              },
+              body: formData
+          })
+          .then(function(res) {
+              return res.json();
+          })     
+          .then(function(data) { 
+              if(data){
+                  alert('Archivo subido correctamente');
+                  location.reload();
+              }
+          })
+          .catch(function(err) {
+              console.log(err);
+          });
+        }
+        else{
+          alert("Error, el tipo de entrega ya se encuentra subida. Cambie el tipo de entrega o bien, elimine la que esta subida");
+        }
+        
+    }
+    function deleteFile(element, color){
+      element.style.color = color;
+      const data = {id: document.getElementById(`id${element.id}`).innerHTML, nombre_archivo: document.getElementById(`nombre_archivo${element.id}`).innerHTML, id_evaluacion: localStorage.getItem('idEvaluacion')};
+      fetch("http://20.200.217.210:8000/deleteFile",{
+            method: 'POST',
+            headers: {
+              "Content-Type":"application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(function(res) {
+            return res.json();
+        })     
+        .then(function(data) { 
+            if(data){
+                alert("Archivo eliminado correctamente");
+                location.reload();
+            }
+            else{
+              alert("Error al procesar la informacion");
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+    }
+
+    function update(bool, data){
+      for(i=0;i<5;i++){
+        for(j=0;j<5;j++){
+          if(tiposEntrega[i] == data[j]){
+            bool[i] = 1;
+          }
+        }
+      }
+    }
+    function verificar(indice){
+      if(bool[indice]==1){
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
+  </script>
+  <footer>
+    <div class="contenedor">
+        <p>&copy; Suprinha Corp 2022 ø</p>
+    </div>
+</footer>
+</html>
